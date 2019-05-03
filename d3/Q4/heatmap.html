@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Heatmap</title>
+		<style>
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript" src="../lib/d3.v5.min.js"></script>
+		<script>
+
+		d3.csv("./heatmap.csv")
+		.then(function(d){
+			var margin={top:30, right:30, bottom:30, left:30};
+			var width = 500 - margin.left - margin.right;
+			var height = 500 - margin.top - margin.bottom;
+			var svg = d3.select("body")
+            .append("svg")
+            .attr("width", width+margin.left+margin.right)
+            .attr("height", height+margin.top+margin.bottom)
+			.append("g")
+			.attr("transform","translate ("+50+","+margin.top+")");
+
+			var temp = d3.select("body")
+            .append("svg")
+            .attr("width", 210)
+            .attr("height", 500)
+			var svg2 = temp.append("g")
+			.attr("transform","translate ("+50+","+60+")");
+
+			d.forEach(function(d){
+				d.bronx=+d.Bronx,
+				d.brooklyn=+d.Brooklyn,
+				d.manhattan=+d.Manhattan,
+				d.queens=+d.Queens,
+				d.staten_island=+d["Staten Island"],
+				d.crime_type=d["Crime Type"],
+				d.year=+d.Year
+			});
+
+			//RESTRUCTURING DATA
+			var sliced=d.slice(0,30)
+			//Creating JSON 'list' to contain location,count,crime,year data (Makes it easier to plot)
+			var list=[]
+			for (var i in sliced) {
+			list.push({location:"Bronx",count:d[i].bronx,crime:d[i].crime_type,year:d[i].year});
+ 				}
+			for (var i in sliced) {
+			list.push({location:"Brooklyn",count:d[i].brooklyn,crime:d[i].crime_type,year:d[i].year});
+				}
+			for (var i in sliced) {
+			list.push({location:"Manhattan",count:d[i].manhattan,crime:d[i].crime_type,year:d[i].year});
+				}
+			for (var i in sliced) {
+			list.push({location:"Queens",count:d[i].queens,crime:d[i].crime_type,year:d[i].year});
+				}
+			for (var i in sliced) {
+			list.push({location:"Staten Island",count:d[i].staten_island,crime:d[i].crime_type,year:d[i].year});
+				}
+			//console.log(d=list)
+			var crime_type = ["Assault","Burglary","Housing","Murder","Robbery","Shooting"];
+			var borough = ["Bronx","Brooklyn","Manhattan","Queens","Staten Island"];
+
+			var crimes_2011=[],crimes_2012=[],crimes_2013=[],crimes_2014=[],crimes_2015=[];
+			for (var i in list){
+				if (list[i].year==2011){crimes_2011.push(list[i])};
+			}
+			for (var i in list){
+				if (list[i].year==2012){crimes_2012.push(list[i])};
+			}
+			for (var i in list){
+				if (list[i].year==2013){crimes_2013.push(list[i])};
+			}
+			for (var i in list){
+				if (list[i].year==2014){crimes_2014.push(list[i])};
+			}
+			for (var i in list){
+				if (list[i].year==2015){crimes_2015.push(list[i])};
+			}
+			//console.log(crimes_2011,crimes_2012,crimes_2013,crimes_2014,crimes_2015)
+
+			//Building the X scale and axis
+			var x =d3.scaleBand()
+						.range([0,width])
+						.domain(crime_type)
+						.padding(0.04);
+			svg.append("g")
+				.attr("transform","translate (0," + height + ")" )
+				.call(d3.axisBottom(x).tickSizeInner([0]))
+				.call(g => g.select(".domain").remove())
+				.selectAll("text")
+			        .style("text-anchor", "middle")
+					.attr("font-size","13px")
+			        .attr("dx", "0")
+			        .attr("dy", "0.5em")
+			        .attr("transform", "rotate(0)","translate(0,30)");
+
+			var y= d3.scaleBand()
+						.range([height,0])
+						.domain(borough)
+						.padding(0.04);
+			svg.append("g")
+				.call(d3.axisLeft(y).tickSizeInner([0]))
+				.call(g => g.select(".domain").remove())
+				.attr("tickSize","0")
+				.selectAll("text")
+			        .style("text-anchor", "middle")
+					.attr("font-size","13px")
+			        .attr("dx", "0")
+			        .attr("dy", "0.05em")
+			        .attr("transform", "rotate(-90)");
+			var max_count=d3.max(list, function(d){ return d.count; });
+			//Building the Color Scale
+			var color=d3.scaleLinear()
+						.range(["white","#500c8c"])
+						.domain([0,max_count]);
+
+			//Creating the boxes in the heat map
+			var boxes=svg.selectAll()
+			boxes
+				.data(crimes_2011)
+				.enter()
+				.append("rect")
+				.attr("x",function(d,i){return x(d.crime);})
+				.attr("y",function(d,i){return y(d.location)})
+				.attr("width",x.bandwidth())
+				.attr("height",y.bandwidth())
+				.style("fill",function(d){return color(d.count);});
+
+			svg2.append("text")
+	 	       .attr("class", "caption")
+	 	       .attr("x",-40)
+	 	       .attr("y", 70)
+	 	       .attr("fill", "#000")
+	 	       .attr("text-anchor", "start")
+	 		   .attr("font-weight", "24")
+	 	       .attr("font-weight", "bold")
+	 	       .text("VISUALIZING CRIME");
+			   svg2.append("text")
+   	 	       .attr("class", "caption")
+   	 	       .attr("x",-10)
+   	 	       .attr("y", 100)
+   	 	       .attr("fill", "#000")
+   	 	       .attr("text-anchor", "start")
+   	 		   .attr("font-weight", "24")
+   	 	       .attr("font-weight", "bold")
+   	 	       .text("IN NEW YORK");
+			//Creating dropdown box
+			var options = ["2011", "2012", "2013", "2014", "2015"];
+
+			var select = d3.select('body')
+						   .append('select')
+						   //svg2
+						   //.insert("select","svg")
+						   .attr('class','select')
+						   .attr("transform","translate ("+100+","+60+")")
+						   .on('change',onchange);
+
+			var options = select
+					     .selectAll('option')
+					   	.data(options).enter()
+					   	.append('option')
+					   		.text(function (d) { return d; });
+
+			function onchange() {
+					select_year = d3.select('select').property('value')
+					d3.selectAll("rect").remove();
+						svg.selectAll()
+						.data(function (d){if (select_year==2011){return crimes_2011;}
+										   if (select_year==2012){return crimes_2012;}
+										   if (select_year==2013){return crimes_2013;}
+									       if (select_year==2014){return crimes_2014;}
+								           if (select_year==2015){return crimes_2015;}})
+						.enter()
+						.append("rect")
+						.attr("x",function(d,i){return x(d.crime);})
+						.attr("y",function(d,i){return y(d.location)})
+						.attr("width",x.bandwidth())
+						.attr("height",y.bandwidth())
+						.style("fill",function(d){return color(d.count);});
+					};
+		 				});
+
+			//arr = data.split('\n');
+			//console.log(data);
+		</script>
+	</body>
+</html>

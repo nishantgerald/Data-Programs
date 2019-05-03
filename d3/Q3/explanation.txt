@@ -1,0 +1,9 @@
+Q3]
+a.2) The "Wins/Nominations Vs. Rating" feature is clearly the much better choice, since there the data is clearly separated,
+and not concentrated at the base like the "Budget" Vs. "Rating" graph. We can make a much clearer distinction between the red and the blue points
+in the "Wins/Nominations Vs. Rating" since there appears to be lesser merging of their domains.
+
+Q3]
+c) Advantage of using square-root and log scales:
+When our data has a lot of data-points lying in the lower values, and a moderate number of points in the higher values, these scales help us
+better distinguish the points in the lower values. The log scale creates a wider distinction for these lower value points than square-root scale.

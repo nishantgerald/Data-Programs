@@ -1,0 +1,6 @@
+Number of rows that return True: 47
+Number of category_name columns after split: 5
+Keying function with max clusters: metaphone3 [566 clusters]
+GREL to change null -> unbranded: if(isNull(value),"Unbranded",value)
+GREL to create high_priced column with binary values: if(toNumber(value)>100,1,0)
+GREL to check for offers: if(or(value.contains("discount"),value.contains("offer"),value.contains("sale")),1,0)

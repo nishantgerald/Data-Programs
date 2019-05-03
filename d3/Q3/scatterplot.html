@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Scatter Plot</title>
+		<style></style>
+	</head>
+	<body>
+		<script type="text/javascript" src="../lib/d3.v5.min.js"></script>
+		<script>
+		d3.csv("./movies.csv")
+		.then(function(data){
+			var w = 800;
+			var h = 600;
+			var padding = 10;
+			var svg = d3.select("body")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+			var votes_min=d3.min(data,function(d){return d.Votes;});
+			var votes_max=d3.max(data,function(d){return d.Votes;});
+			var rating_min=d3.min(data,function(d){return d.Rating;});
+			var rating_max=d3.max(data,function(d){return d.Rating;});
+			var min_winsnoms=d3.min(data,function(d){return d.WinsNoms;});
+			var max_winsnoms=d3.max(data, function(d){ return d.WinsNoms; });
+			var scale_rating = d3.scaleLinear().domain([rating_min-0.5,rating_max]).range([20,400]);
+			var scale_winsnoms = d3.scaleLinear().domain([0,271]).range([380,10]);
+			var scale_winsnoms_sqrt = d3.scaleSqrt().domain([0,271]).range([380,10]);
+				var scale_winsnoms_log = d3.scaleLog().clamp(true).domain([1,271]).range([380,10]);
+			var scale_winsnoms_radius = d3.scaleLinear().domain([0,271]).range([10,50]);
+			var min_budget=d3.min(data,function(d){return d.Budget;});
+			var max_budget=d3.max(data,function(d){return d.Budget;});
+			var scale_budget = d3.scaleLinear().domain([50000,200000000]).range([380,10]);
+			var scale_votes = d3.scaleLinear().domain([32,982571]).range([380,10]);
+//=============================================================================================================================//
+//Graph 1
+
+			//console.log(max_winsnoms)
+			svg.selectAll("circle")
+			    .data(data)
+			    .enter()
+			    .append("circle")
+				.attr("cx", function(d, i) {return scale_rating(d.Rating);})
+				.attr("cy", function(d, i) {return scale_winsnoms(d.WinsNoms);})
+				.attr("r", function(d) {return 2;})
+				.attr("fill-opacity",0)
+				.attr("stroke",function(d){if (d.IsGoodRating == 1)
+					   { return "Blue";};
+				if (d.IsGoodRating == 0)
+					   {return "Red"};});
+
+			svg.append("g")
+		       .attr("class", "x axis")
+		       .attr("transform", "translate(0," +380+ ")")
+		       .call(d3.axisBottom(scale_rating));
+
+			svg.append("g")
+		       .attr("class", "y axis")
+			   .attr("transform", "translate(35," + 0 + ")")
+		       .call(d3.axisLeft(scale_winsnoms));
+
+			   svg.append("text")
+   	 	       .attr("class", "caption")
+   	 	       .attr("x",500)
+   	 	       .attr("y", 70)
+   	 	       .attr("fill", "#000")
+   	 	       .attr("text-anchor", "start")
+   	 		   .attr("font-weight", "24")
+   	 	       .attr("font-weight", "bold")
+   	 	       .text("Wins/Nominations Vs. Rating");
+//CREATING LEGEND
+			   svg.append("circle")
+      		       .attr("cx", "580")
+				   .attr("cy","102")
+				   .attr("r", function(d) {return 3;})
+				   .attr("fill-opacity",0)
+				   .attr("stroke","Red");
+
+				   svg.append("text")
+       	 	       .attr("class", "caption")
+       	 	       .attr("x",600)
+       	 	       .attr("y", 105)
+       	 	       .attr("fill", "#000")
+       	 	       .attr("text-anchor", "start")
+       	 		   .attr("font-size", "14")
+       	 	       .text("Bad Rating");
+
+				   svg.append("circle")
+          		       .attr("cx", "580")
+    				   .attr("cy","122")
+    				   .attr("r", function(d) {return 3;})
+    				   .attr("fill-opacity",0)
+    				   .attr("stroke","Blue");
+
+					   svg.append("text")
+   	    	 	       .attr("class", "caption")
+   	    	 	       .attr("x",600)
+   	    	 	       .attr("y", 125)
+   	    	 	       .attr("fill", "#000")
+   	    	 	       .attr("text-anchor", "start")
+   	    	 		   .attr("font-size", "14")
+   	    	 	       .text("Good Rating");
+      		       //.attr("transform", "translate(45," +380+ ")");
+//=============================================================================================================================//
+
+			   //GRAPH 2
+			   var svg2 = d3.select("body")
+               .append("svg")
+               .attr("width", w)
+               .attr("height", h);
+
+			   svg2.selectAll("circle")
+   			    .data(data)
+   			    .enter()
+   			    .append("circle")
+   				.attr("cx", function(d) {return scale_rating(d.Rating)+45;})
+   				.attr("cy", function(d) {return scale_budget(d.Budget);})
+   				.attr("r", function(d) {return 2;})
+   				.attr("fill-opacity",0)
+   				.attr("stroke",function(d){if (d.IsGoodRating == 1)
+   					   { return "Blue";};
+   				if (d.IsGoodRating == 0)
+   					   {return "Red"};});
+
+   			svg2.append("g")
+   		       .attr("class", "x axis")
+   		       .attr("transform", "translate(45," +380+ ")")
+   		       .call(d3.axisBottom(scale_rating));
+
+   			svg2.append("g")
+   		       .attr("class", "y axis")
+   			   .attr("transform", "translate(80," + 0 + ")")
+   		       .call(d3.axisLeft(scale_budget));
+
+			   svg2.append("text")
+ 			  .attr("class", "caption")
+ 			  .attr("x",550)
+ 			  .attr("y", 70)
+ 			  .attr("fill", "#000")
+ 			  .attr("text-anchor", "start")
+ 			  .attr("font-weight", "24")
+ 			  .attr("font-weight", "bold")
+ 			  .text("Budget Vs. Rating");
+
+			  //CREATING LEGEND
+			  			   svg2.append("circle")
+			        		       .attr("cx", "580")
+			  				   .attr("cy","102")
+			  				   .attr("r", function(d) {return 3;})
+			  				   .attr("fill-opacity",0)
+			  				   .attr("stroke","Red");
+
+			  				   svg2.append("text")
+			         	 	       .attr("class", "caption")
+			         	 	       .attr("x",600)
+			         	 	       .attr("y", 105)
+			         	 	       .attr("fill", "#000")
+			         	 	       .attr("text-anchor", "start")
+			         	 		   .attr("font-size", "14")
+			         	 	       .text("Bad Rating");
+
+			  				   svg2.append("circle")
+			            		       .attr("cx", "580")
+			      				   .attr("cy","122")
+			      				   .attr("r", function(d) {return 3;})
+			      				   .attr("fill-opacity",0)
+			      				   .attr("stroke","Blue");
+
+			  					   svg2.append("text")
+			     	    	 	       .attr("class", "caption")
+			     	    	 	       .attr("x",600)
+			     	    	 	       .attr("y", 125)
+			     	    	 	       .attr("fill", "#000")
+			     	    	 	       .attr("text-anchor", "start")
+			     	    	 		   .attr("font-size", "14")
+			     	    	 	       .text("Good Rating");
+//=============================================================================================================================//
+
+//GRAPH 3
+var svg3 = d3.select("body")
+.append("svg")
+.attr("width", w)
+.attr("height", h);
+
+svg3.selectAll("circle")
+ .data(data)
+ .enter()
+ .append("circle")
+ .attr("cx", function(d) {return scale_rating(d.Rating)+20;})
+ .attr("cy", function(d) {return scale_votes(d.Votes);})
+ .attr("r", function(d) {return scale_winsnoms_radius(d.WinsNoms)/10;})
+ .attr("fill-opacity",0)
+ .attr("stroke",function(d){if (d.IsGoodRating == 1)
+		{ return "Blue";};
+ if (d.IsGoodRating == 0)
+		{return "Red"};});
+
+svg3.append("g")
+.attr("class", "x axis")
+.attr("transform", "translate(20," +380+ ")")
+.call(d3.axisBottom(scale_rating));
+
+svg3.append("g")
+.attr("class", "y axis")
+.attr("transform", "translate(55," + 0 + ")")
+.call(d3.axisLeft(scale_votes));
+
+svg3.append("text")
+.attr("class", "caption")
+.attr("x",550)
+.attr("y", 70)
+.attr("fill", "#000")
+.attr("text-anchor", "start")
+.attr("font-weight", "24")
+.attr("font-weight", "bold")
+.text("Votes Vs. Rating");
+
+svg3.append("text")
+.attr("class", "caption")
+.attr("x",500)
+.attr("y", 100)
+.attr("fill", "#000")
+.attr("text-anchor", "start")
+.attr("font-weight", "24")
+.attr("font-weight", "bold")
+.text("(Sized by Wins/Nominations)");
+
+//CREATING LEGEND
+			   svg3.append("circle")
+      		       .attr("cx", "580")
+				   .attr("cy","127")
+				   .attr("r", function(d) {return 3;})
+				   .attr("fill-opacity",0)
+				   .attr("stroke","Red");
+
+				   svg3.append("text")
+       	 	       .attr("class", "caption")
+       	 	       .attr("x",600)
+       	 	       .attr("y", 130)
+       	 	       .attr("fill", "#000")
+       	 	       .attr("text-anchor", "start")
+       	 		   .attr("font-size", "14")
+       	 	       .text("Bad Rating");
+
+				   svg3.append("circle")
+          		       .attr("cx", "580")
+    				   .attr("cy","150")
+    				   .attr("r", function(d) {return 3;})
+    				   .attr("fill-opacity",0)
+    				   .attr("stroke","Blue");
+
+					   svg3.append("text")
+   	    	 	       .attr("class", "caption")
+   	    	 	       .attr("x",600)
+   	    	 	       .attr("y", 153)
+   	    	 	       .attr("fill", "#000")
+   	    	 	       .attr("text-anchor", "start")
+   	    	 		   .attr("font-size", "14")
+   	    	 	       .text("Good Rating");
+
+//=============================================================================================================================//
+
+	   //GRAPH 4
+	   var svg4 = d3.select("body")
+       .append("svg")
+       .attr("width", w)
+       .attr("height", h);
+
+	   //console.log(max_winsnoms)
+	   svg4.selectAll("circle")
+		   .data(data)
+		   .enter()
+		   .append("circle")
+		   .attr("cx", function(d, i) {return scale_rating(d.Rating);})
+		   .attr("cy", function(d, i) {return scale_winsnoms_sqrt(d.WinsNoms);})
+		   .attr("r", function(d) {return 2;})
+		   .attr("fill-opacity",0)
+		   .attr("stroke",function(d){if (d.IsGoodRating == 1)
+				  { return "Blue";};
+		   if (d.IsGoodRating == 0)
+				  {return "Red"};});
+
+	   svg4.append("g")
+		  .attr("class", "x axis")
+		  .attr("transform", "translate(0," +380+ ")")
+		  .call(d3.axisBottom(scale_rating));
+
+	   svg4.append("g")
+		  .attr("class", "y axis")
+		  .attr("transform", "translate(35," + 0 + ")")
+		  .call(d3.axisLeft(scale_winsnoms_sqrt));
+
+		  svg4.append("text")
+  		.attr("class", "caption")
+  		.attr("x",500)
+  		.attr("y", 70)
+  		.attr("fill", "#000")
+  		.attr("text-anchor", "start")
+  		.attr("font-weight", "24")
+  		.attr("font-weight", "bold")
+  		.text("Wins/Nominations Vs. Rating");
+		svg4.append("text")
+	  .attr("class", "caption")
+	  .attr("x",500)
+	  .attr("y", 88)
+	  .attr("fill", "#000")
+	  .attr("text-anchor", "start")
+	  .attr("font-weight", "24")
+	  .attr("font-weight", "bold")
+	  .text("(Y-axis Scaled by Square-root)");
+
+	  //CREATING LEGEND
+	  			   svg4.append("circle")
+	        		       .attr("cx", "580")
+	  				   .attr("cy","127")
+	  				   .attr("r", function(d) {return 3;})
+	  				   .attr("fill-opacity",0)
+	  				   .attr("stroke","Red");
+
+	  				   svg4.append("text")
+	         	 	       .attr("class", "caption")
+	         	 	       .attr("x",600)
+	         	 	       .attr("y", 130)
+	         	 	       .attr("fill", "#000")
+	         	 	       .attr("text-anchor", "start")
+	         	 		   .attr("font-size", "14")
+	         	 	       .text("Bad Rating");
+
+	  				   svg4.append("circle")
+	            		       .attr("cx", "580")
+	      				   .attr("cy","150")
+	      				   .attr("r", function(d) {return 3;})
+	      				   .attr("fill-opacity",0)
+	      				   .attr("stroke","Blue");
+
+	  					   svg4.append("text")
+	     	    	 	       .attr("class", "caption")
+	     	    	 	       .attr("x",600)
+	     	    	 	       .attr("y", 153)
+	     	    	 	       .attr("fill", "#000")
+	     	    	 	       .attr("text-anchor", "start")
+	     	    	 		   .attr("font-size", "14")
+	     	    	 	       .text("Good Rating");
+
+//=============================================================================================================================//
+//GRAPH 5
+var svg5 = d3.select("body")
+.append("svg")
+.attr("width", w)
+.attr("height", h);
+
+//console.log(max_winsnoms)
+svg5.selectAll("circle")
+	.data(data)
+	.enter()
+	.append("circle")
+	.attr("cx", function(d, i) {return scale_rating(d.Rating)+15;})
+	.attr("cy", function(d, i) {return scale_winsnoms_log(d.WinsNoms);})
+	.attr("r", function(d) {return 2;})
+	.attr("fill-opacity",0)
+	.attr("stroke",function(d){if (d.IsGoodRating == 1)
+		   { return "Blue";};
+	if (d.IsGoodRating == 0)
+		   {return "Red"};});
+
+svg5.append("g")
+   .attr("class", "x axis")
+   .attr("transform", "translate(15," +380+ ")")
+   .call(d3.axisBottom(scale_rating));
+
+svg5.append("g")
+   .attr("class", "y axis")
+   .attr("transform", "translate(50," + 0 + ")")
+   .call(d3.axisLeft(scale_winsnoms_log));
+
+   svg5.append("text")
+	 .attr("class", "caption")
+	 .attr("x",500)
+	 .attr("y", 70)
+	 .attr("fill", "#000")
+	 .attr("text-anchor", "start")
+	 .attr("font-weight", "24")
+	 .attr("font-weight", "bold")
+	 .text("Wins/Nominations Vs. Rating");
+ svg5.append("text")
+.attr("class", "caption")
+.attr("x",550)
+.attr("y", 88)
+.attr("fill", "#000")
+.attr("text-anchor", "start")
+.attr("font-weight", "24")
+.attr("font-weight", "bold")
+.text("(Y-axis Scaled by Log)");
+
+//CREATING LEGEND
+			   svg5.append("circle")
+      		       .attr("cx", "580")
+				   .attr("cy","127")
+				   .attr("r", function(d) {return 3;})
+				   .attr("fill-opacity",0)
+				   .attr("stroke","Red");
+
+				   svg5.append("text")
+       	 	       .attr("class", "caption")
+       	 	       .attr("x",600)
+       	 	       .attr("y", 130)
+       	 	       .attr("fill", "#000")
+       	 	       .attr("text-anchor", "start")
+       	 		   .attr("font-size", "14")
+       	 	       .text("Bad Rating");
+
+				   svg5.append("circle")
+          		       .attr("cx", "580")
+    				   .attr("cy","150")
+    				   .attr("r", function(d) {return 3;})
+    				   .attr("fill-opacity",0)
+    				   .attr("stroke","Blue");
+
+					   svg5.append("text")
+   	    	 	       .attr("class", "caption")
+   	    	 	       .attr("x",600)
+   	    	 	       .attr("y", 153)
+   	    	 	       .attr("fill", "#000")
+   	    	 	       .attr("text-anchor", "start")
+   	    	 		   .attr("font-size", "14")
+   	    	 	       .text("Good Rating");
+//=============================================================================================================================//
+
+
+			   			  });
+		</script>
+	</body>
+</html>

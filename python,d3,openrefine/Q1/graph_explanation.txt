@@ -1,0 +1,6 @@
+Layouts used:
+	1) Force Atlas - Linked nodes attract each other and non-linked nodes get pushed away.
+	2) Noverlap - To make each node visible.
+	3) Label Adjust - Adjusted spacing to accommodate the labels in the graph.
+Ranking:
+	- Changed the diameter of each node based on degree of the node. Larger nodes = higher degree

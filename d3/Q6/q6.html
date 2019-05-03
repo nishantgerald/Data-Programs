@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Choropleth Map of County Data</title>
+	<style>
+
+	.counties {
+	  fill: none;
+	}
+
+	.states {
+	  fill: none;
+	  stroke: #fff;
+	  stroke-linejoin: round;
+	}
+
+	div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 60px;
+    height: 28px;
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;}
+
+	</style>
+</head>
+
+<body>
+	<script type="text/javascript" src="../lib/d3.v5.min.js"></script>
+	<script type="text/javascript" src="../lib/d3-scale-chromatic.v1.min.js"></script>
+	<script type="text/javascript" src="../lib/topojson.v2.min.js"></script>
+	<script type="text/javascript" src="../lib/d3-tip.min.js"></script>
+	<svg width="960" height="600"></svg>
+	<script>
+		var svg = d3.select("svg"),
+		    width = +svg.attr("width"),
+		    height = +svg.attr("height");
+		var chloropleth = d3.map();
+		var path = d3.geoPath();
+		var x = d3.scaleLinear()
+				  .domain([1, 10])
+				  .rangeRound([600, 860]);
+	    var y = d3.scaleLinear()
+				  .domain([1, 10])
+				  .rangeRound([250, 400]);
+		var color = d3.scaleThreshold()
+		      		  .domain(d3.range(1, 10))
+		              .range(d3.schemeGreens[9]);
+	    var g = svg.append("g")
+	               .attr("class", "key")
+	               .attr("transform", "translate(0,40)");
+				   var div = d3.select("body").append("div")
+				       .attr("class", "tooltip")
+				       .style("opacity", 0)
+		var tip = d3.tip()
+		  .attr('class', 'd3-tip')
+		  .offset([-10, 0])
+		  .html(function(d) {
+		    return "State";
+		  })
+
+
+
+	    // Define the div for the tooltip
+		//var div = d3.select("body").append("div")
+		//			    		   .attr("class", "tooltip")
+		//			    		   .style("opacity", 0);
+
+	   //Creates the color scale legend
+	   g.selectAll("rect")
+			 .data(color.range().map(function(d) {
+				 //console.log(d)
+			     d = color.invertExtent(d);
+				 //console.log(d)
+			     if (d[0] == null)
+				 		{ //console.log(d[0])
+							//d[0] = x.domain()[0]};
+							d[0]=0};
+			     if (d[1] == null)
+				 		{d[1] = x.domain()[1]};
+			     return d;
+
+			 }))
+			 .enter().append("rect")
+			   .attr("height", 8)
+			   .attr("x", function(d) { return 35; })
+			   .attr("y", function(d) { return y(d[0]+0.72); })
+			   .attr("width", function(d) { return 10; })
+			   .attr("fill", function(d) { return color(d[0]); });
+
+	   //Creates caption for legend
+	   svg.append("text")
+	       .attr("class", "caption")
+	       .attr("x", x.range()[0])
+	       .attr("y", -6)
+	       .attr("fill", "#000")
+	       .attr("text-anchor", "start")
+		   .attr("font-weight", 18)
+	       .attr("font-weight", "bold")
+	       .text("Choropleth Map of County Data");
+	   //Create the ticks for the legend
+	   g.call(d3.axisRight(y)
+		    .tickSize(0)
+		    .tickFormat(function(x, i) { if(x==1){return  "<"+x + "%"; } if (x==9){return ">"+x + "%";} else {return x + "%";}})
+		    .tickValues(color.domain()))
+			.attr("transform", "translate(900,0)")
+		    .select(".domain")
+		    .remove();
+
+			svg.append("text")
+			.attr("class", "caption")
+			.attr("x",350)
+			.attr("y", 40)
+			.attr("fill", "#000")
+			.attr("text-anchor", "start")
+			.attr("font-weight", "24")
+			.attr("font-weight", "bold")
+			.text("Choropleth Map of US county data")
+
+			svg.append("text")
+			.attr("class", "caption")
+			.attr("x",890)
+			.attr("y", 235)
+			.attr("fill", "#000")
+			.attr("text-anchor", "start")
+			.attr("font-size", "10")
+			.attr("font-weight", "bold")
+			.text("Poverty rate")
+
+
+		svg.call(tip);
+  	   //Using d3.v5 Promises to load in the data
+	   var promises = [
+		  d3.json("./us.json"),
+		  d3.csv("./county_poverty.csv", function(d) { chloropleth.set(d.CensusId, +d.Poverty); });
+		  //d3.csv("./county_detail.csv",function(d){chloropleth.set(d.CensusId,+d.TotalPop,+d.IncomePerCap)})];
+
+	   function ready([us]) {
+							  svg.append("g")
+							     .attr("class", "counties")
+							     .selectAll("path")
+							     .data(topojson.feature(us, us.objects.counties).features)
+							     .enter().append("path")
+							     .attr("fill", function(d) { return color(d.rate = chloropleth.get(d.id)); })
+							     .attr("d", path)
+								 .on('mouseover', tip.show)
+      		 					 .on('mouseout', tip.hide)
+
+								//Alternate hover info method besides 'tool-tip'
+							    .append("title")
+							      .text(function(d) { return "Rate= "+d.rate + "%"; });
+
+							  svg.append("path")
+							     .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+							     .attr("class", "states")
+							     .attr("d", path);
+							}
+		Promise.all(promises).then(ready)
+	</script>
+
+</body>
+</html>

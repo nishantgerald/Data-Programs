@@ -1,0 +1,9 @@
+1) Average Node Degree: 1.713
+The average number of edges entering a node, which represents: The average number of movies that a given movie is similar to.
+
+2) Diameter of Graph: 15
+Diameter of a node is the "longest" shortest path in a graph/network. This represents the distance
+between the two most unrelated movies on the graph.
+
+3) Average Path Length: 4.421
+The average number of steps needed to get from any movie A to B (not including the sets that are unlinked)

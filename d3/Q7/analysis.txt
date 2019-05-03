@@ -1,0 +1,26 @@
+Pros and Cons of Viz Tools:
+
+1) Ease to develop
+	-Seaborn: Moderately easy to develop, and debug.
+	-Tableau: Easiest to develop, as the software comes as a whole package with a GUI.
+	-D3: Hard to develop, due to multiple version variations, which cause problems.
+
+2) Ease of maintaining the visualization
+	-Seaborn: Easily maintains the visualization, but may have to re-run the code on new data.
+	-Tableau: Not as easy, and may have to manually add some changes everytime.
+	-D3: Easiest way to maintain visualization and will occur dynamically, as the data changes.
+
+3) Usability of visualization for end-user
+	-Seaborn: Least user-friendly, but still allows user-interaction with elements.
+	-Tableau: Moderately user-friendly for the end user.
+	-D3: Can be extremely user-friendly for the end user, with interactive elements.
+
+4) Scalability of visualization to "large" datasets
+	-Seaborn: Scales moderately well with large datasets, but not as well as D3.
+	-Tableau: Does not handle extremely large datasets very well, due to UI.
+	-D3: Scales very well with large datasets, and is probably the best choice among the 3.
+
+5) System requirements to run the visualization
+	-Seaborn: Moderate requirement. Needs Python to be installed along with the seaborn library.
+	-Tableau: Most storage requirement, as we need to install the entire Tableau software
+	-D3: Probably lowest requirement. Only needs javascript installed, along with the d3 library file.

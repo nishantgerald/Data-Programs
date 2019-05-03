@@ -1,0 +1,72 @@
+###############################################################################
+##                                                                           ##
+##  IMPORTANT NOTE: All accuracies must be reported with two decimal places  ##
+##  in the range of [0.00, 1.00], e.g. 0.78 and not 78, 78.00, 78%, etc.     ##
+##                                                                           ##
+###############################################################################
+
+**********************************************
+Q 3.1
+
+Linear Regression - Training Accuracy: 0.64
+Linear Regression - Testing Accuracy: 0.64
+
+Random Forest - Training Accuracy: 1.0
+Random Forest - Testing Accuracy: 0.89
+
+SVM - Training Accuracy: 0.56
+SVM - Testing Accuracy: 0.54
+
+**********************************************
+
+Q 3.2 Hyperparameter Tuning
+
+Random Forest - n_estimators values tested (at least 3): 10,20,50,150,200
+Random Forest - max_depth values tested (at least 3): 1,4,7
+
+Random Forest - Best combination of parameter values - n_estimators: 200
+Random Forest - Best combination of parameter values - max_depth: 7
+
+Random Forest - Testing Accuracy before tuning (default parameters): 0.89
+Random Forest - Testing Accuracy after tuning: 0.81
+
+SVM - Kernel Values tested: 'linear', 'rbf'
+SVM - C values tested (at Least 3): 0.01, 0.1, 1
+SVM - Best combination of parameter values - Kernel: linear
+SVM - Best combination of parameter values - C: 0.01
+
+*********************************************
+
+Q 3.3
+
+SVM - Highest mean testing/cross-validated accuracy (best score): 0.56
+SVM - Mean train score: [0.5559794, 0.5559794, 0.5559794, 0.5559794, 0.5559794, 0.5559794]), 'std_train_score': array([2.88604273e-05, 2.88604273e-05, 2.88604273e-05, 2.88604273e-05, 2.88604273e-05, 2.88604273e-05]
+SVM Mean fit time:[ 4.41075246,  8.33645976,  4.59243951,  8.80641208,  5.24009228, 12.82811751]
+
+*********************************************
+
+Q 3.4 Feature Importance - WITH THE MODEL TRAINED IN Q 3.1
+
+Random Forest  - Most important feature (e.g. X5): X6
+Random Forest  - Least important feature (e.g. X1): X8
+
+*********************************************
+
+Q 3.5
+
+Best Classifier and why (in at most 50 words): The RandomForestClassifier appears to be the best classifier in terms
+of both prediction accuracy and time! It gives us an accuracy of about 0.9 with the testing data, and runs in under a second.
+It is also possible to improve speed by only using the most important features.
+
+*********************************************
+
+Q 3.6 Principal Component Analysis
+
+"PCA - Percentage of variance explained by each of the selected components (enter the entire array as [0.12, …, 0.012])": [50.524469980530306, 37.69363089208575, 11.772945954460601, 0.004599
+411450589381, 0.001927889222939451, 0.001123258090659149, 0.000678642894250805, 0.0001889711372913477, 0.000154088291927
+70524, 8.242897535323185e-05]
+"PCA - Singular values corresponding to each of the selected components (enter the entire array as [0.09, …, 0.037])": [886690.5502151141, 765870.2214903062, 428019.71358830
+034, 8460.038276212183, 5477.245846504545, 4180.815231634842, 3249.689371373069, 1714.8215606319875, 1548.4814867619, 11
+32.5598135410282]
+
+*********************************************
